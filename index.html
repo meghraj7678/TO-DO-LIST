@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pro To-Do List</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <h1>🚀 Pro To-Do List</h1>
+        <button id="themeToggle" title="Toggle Theme">🌙</button>
+      </header>
+
+      <div class="input-group">
+        <input
+          type="text"
+          id="taskInput"
+          placeholder="What's on your mind?"
+          autocomplete="off"
+        />
+        <button id="addBtn">+</button>
+      </div>
+
+      <div class="filters">
+        <button class="filter active" data-filter="all">All</button>
+        <button class="filter" data-filter="active">Active</button>
+        <button class="filter" data-filter="completed">Completed</button>
+      </div>
+
+      <ul id="taskList" class="task-list"></ul>
+
+      <div class="controls">
+        <button id="clearAll">🗑 Clear All</button>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const taskInput = document.getElementById("taskInput");
+        const addBtn = document.getElementById("addBtn");
+        const taskList = document.getElementById("taskList");
+        const filterButtons = document.querySelectorAll(".filter");
+        const clearAll = document.getElementById("clearAll");
+        const themeToggle = document.getElementById("themeToggle");
+        function createTaskElement(taskText) {
+          const li = document.createElement("li");
+          li.classList.add("task-item", "active");
+          li.innerHTML = `
+    <span>${taskText}</span>
+    <div class="actions">
+      <button class="completeBtn">✅</button>
+      <button class="deleteBtn">❌</button>
+    </div>
+  `;
+
+          li.querySelector(".completeBtn").addEventListener("click", () => {
+            li.classList.add("completed");
+            li.classList.remove("active");
+            li.querySelector(".completeBtn").remove(); // ✅ hide tick after marking completed
+          });
+
+          li.querySelector(".deleteBtn").addEventListener("click", () => {
+            li.remove();
+          });
+
+          return li;
+        }
+
+        addBtn.addEventListener("click", () => {
+          const text = taskInput.value.trim();
+          if (text) {
+            const taskItem = createTaskElement(text);
+            taskList.appendChild(taskItem);
+            taskInput.value = "";
+          }
+        });
+
+        taskInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            addBtn.click();
+          }
+        });
+
+        clearAll.addEventListener("click", () => {
+          taskList.innerHTML = "";
+        });
+
+        filterButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            filterButtons.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const filter = btn.dataset.filter;
+            document.querySelectorAll(".task-item").forEach((item) => {
+              if (filter === "all") {
+                item.style.display = "flex";
+              } else {
+                item.style.display = item.classList.contains(filter)
+                  ? "flex"
+                  : "none";
+              }
+            });
+          });
+        });
+
+        themeToggle.addEventListener("click", () => {
+          document.body.classList.toggle("light-mode");
+          themeToggle.textContent = document.body.classList.contains(
+            "light-mode"
+          )
+            ? "☀"
+            : "🌙";
+        });
+      });
+    </script>
+  </body>
+</html>
